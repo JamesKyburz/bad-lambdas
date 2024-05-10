@@ -120,7 +120,7 @@ Resources:
       CodeUri: functions/leak-disk-space/
       Handler: index.handler
       Description: 'leak disk space'
-      Timeout: 6
+      Timeout: 10
       MemorySize: 128
       Policies:
         - Version: 2012-10-17
