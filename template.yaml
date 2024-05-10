@@ -133,3 +133,22 @@ Resources:
               Effect: Allow
       LoggingConfig:
         LogGroup: !Ref CloudWatchLogGroup
+  LeakMemory:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/leak-memory/
+      Handler: index.handler
+      Description: 'leak memory'
+      Timeout: 30
+      MemorySize: 128
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Sid: CloudWatchLogGroup
+              Action:
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt CloudWatchLogGroup.Arn
+              Effect: Allow
+      LoggingConfig:
+        LogGroup: !Ref CloudWatchLogGroup
