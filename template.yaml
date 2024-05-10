@@ -5,6 +5,8 @@ Transform:
 Description: Bad Lambdas
 
 Globals:
+  Api:
+    OpenApiVersion: 3.0.1
   Function:
     Tracing: Active
     Architectures:
@@ -13,6 +15,15 @@ Globals:
     PropagateTags: true
 
 Resources:
+  ApiGatewayWebSocketApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub '${AWS::StackName}-websocket'
+      Description: !Sub '${AWS::StackName} api gateway websocket'
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: $request.body.type
+      Tags:
+        Name: !Sub '${AWS::StackName} websocket'
   CloudWatchLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -48,6 +59,50 @@ Resources:
       Description: 'unhandled promise rejection after 5 seconds'
       Timeout: 6
       MemorySize: 128
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Sid: CloudWatchLogGroup
+              Action:
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt CloudWatchLogGroup.Arn
+              Effect: Allow
+      LoggingConfig:
+        LogGroup: !Ref CloudWatchLogGroup
+  LeakFileDescriptors1:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/leak-file-descriptors/
+      Handler: index.leak1
+      Description: 'leak 1 file descriptor'
+      Timeout: 6
+      MemorySize: 128
+      Environment:
+        Variables:
+          API_ID: !Ref ApiGatewayWebSocketApi
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Sid: CloudWatchLogGroup
+              Action:
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt CloudWatchLogGroup.Arn
+              Effect: Allow
+      LoggingConfig:
+        LogGroup: !Ref CloudWatchLogGroup
+  LeakFileDescriptors100:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/leak-file-descriptors/
+      Handler: index.leak100
+      Description: 'leak 100 file descriptors'
+      Timeout: 300
+      MemorySize: 128
+      Environment:
+        Variables:
+          API_ID: !Ref ApiGatewayWebSocketApi
       Policies:
         - Version: 2012-10-17
           Statement:

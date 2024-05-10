@@ -9,4 +9,5 @@ sam build
 sam deploy
 ```
 
-- [unhandled promise rejection lambdas](./functions/unhandled-rejection/README)
+- [unhandled promise rejection lambdas](./functions/unhandled-rejection/README.md)
+- [leaking file descriptors](./functions/leak-file-descriptors/README.md)
