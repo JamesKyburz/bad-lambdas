@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Description: Bad Lambdas
+
+Globals:
+  Function:
+    Tracing: Active
+    Architectures:
+      - arm64
+    Runtime: nodejs20.x
+    PropagateTags: true
+
+Resources:
+  CloudWatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AWS::StackName}
+      RetentionInDays: 1
+      Tags:
+        - Key: 'Name'
+          Value: !Sub '${AWS::StackName} lambda logs'
+  UnhandledRejection0:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/unhandled-rejection/
+      Handler: index.failAfter0
+      Description: 'unhandled promise rejection after 0 seconds'
+      Timeout: 6
+      MemorySize: 128
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Sid: CloudWatchLogGroup
+              Action:
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt CloudWatchLogGroup.Arn
+              Effect: Allow
+      LoggingConfig:
+        LogGroup: !Ref CloudWatchLogGroup
+  UnhandledRejection5:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/unhandled-rejection/
+      Handler: index.failAfter5
+      Description: 'unhandled promise rejection after 5 seconds'
+      Timeout: 6
+      MemorySize: 128
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Sid: CloudWatchLogGroup
+              Action:
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt CloudWatchLogGroup.Arn
+              Effect: Allow
+      LoggingConfig:
+        LogGroup: !Ref CloudWatchLogGroup
