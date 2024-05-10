@@ -114,3 +114,22 @@ Resources:
               Effect: Allow
       LoggingConfig:
         LogGroup: !Ref CloudWatchLogGroup
+  LeakDiskSpace:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/leak-disk-space/
+      Handler: index.handler
+      Description: 'leak disk space'
+      Timeout: 6
+      MemorySize: 128
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Sid: CloudWatchLogGroup
+              Action:
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt CloudWatchLogGroup.Arn
+              Effect: Allow
+      LoggingConfig:
+        LogGroup: !Ref CloudWatchLogGroup
