@@ -19,6 +19,12 @@ lambda=$(sam list resources --region us-east-1 --stack-name 'bad-lambdas' --outp
 for n in {1..2}; aws lambda invoke --function-name ${lambda:?} --region us-east-1 --payload '{}' /dev/stdout | cat)
 ```
 
+## Test locally
+
+```sh
+node --max-old-space-size=50 ./leak-memory/index.mjs
+```
+
 ## Conclusion
 
 Leaking memory in Lambda is normally not as serious as when running a long running process.
